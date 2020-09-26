@@ -1,13 +1,21 @@
-FROM ruby:2.7.1
+FROM ruby:2.5.8
+
+EXPOSE 3000
+WORKDIR /usr/src/app
+
 RUN apt-get update -qq && apt-get install -y nodejs
 
+# Add a script to be executed every time the container starts.
 COPY entrypoint.sh /usr/bin/
 RUN chmod +x /usr/bin/entrypoint.sh
-ENTRYPOINT ["sh", "entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]
 
-RUN mkdir /app
-WORKDIR /app
-COPY Gemfile /app/Gemfile
-COPY Gemfile.lock /app/Gemfile.lock
+# Copy gems files
+COPY Gemfile ./Gemfile
+COPY Gemfile.lock ./Gemfile.lock
+
+# Intall gems
 RUN bundle install
-COPY . /app
+
+# Copy files from my local folder
+COPY . .
